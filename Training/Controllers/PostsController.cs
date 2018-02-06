@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Training.Models;
@@ -15,7 +16,7 @@ namespace Training.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Posts
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             return View(db.Posts.ToList());
         }
@@ -36,8 +37,17 @@ namespace Training.Controllers
         }
 
         // GET: Posts/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
+            var categories = await db.PostCategories
+                .Where(x => x.IsDeleted == false && x.Status == Status.Published)
+                .Select(i => new SelectListItem()
+                {
+                    Text = i.Title,
+                    Value = i.Permalink,
+                    Selected = false
+                }).ToArrayAsync();
+            ViewBag.Categories = categories;
             return View();
         }
 

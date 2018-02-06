@@ -87,12 +87,19 @@ namespace Training.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PostCategory postCategory = await db.PostCategories.FindAsync(id);
+            var postCategory = await db.PostCategories.FindAsync(id);
             if (postCategory == null)
             {
                 return HttpNotFound();
             }
-            return View(postCategory);
+            //var postCategoryVm = new ViewModels.PostCategory()
+            //{
+            //    Order = postCategory.Order,
+            //    Permalink = postCategory.Permalink,
+            //    Title = postCategory.Title
+            //};
+            var postCategoryVm = new ViewModels.PostCategory(postCategory);
+            return View(postCategoryVm);
         }
 
         // POST: PostCategories/Edit/5
@@ -100,15 +107,25 @@ namespace Training.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Permalink,Title,Order,IsDeleted,Created,Updated,Deleted,Published,Status")] PostCategory postCategory)
+        public async Task<ActionResult> Edit(ViewModels.PostCategory _category)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(postCategory).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                if(_category.Permalink != null)
+                {
+                    var postCategory = await db.PostCategories.FindAsync(_category.Permalink);
+                    if(postCategory != null)
+                    {
+                        postCategory.Title = _category.Title;
+                        postCategory.Order = _category.Order;
+                        db.Entry(postCategory).State = EntityState.Modified;
+                        var result = await db.SaveChangesAsync();
+                        if(result > 0)
+                            return RedirectToAction("Index");
+                    }
+                }
             }
-            return View(postCategory);
+            return View(_category);
         }
 
         // GET: PostCategories/Delete/5
