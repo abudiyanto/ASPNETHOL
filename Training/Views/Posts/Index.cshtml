@@ -1,63 +1,119 @@
 ﻿@model IEnumerable<Training.Models.Post>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Daftar Post";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h2>Index</h2>
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">Kelola Berita</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Berita</a></li>
+            <li class="breadcrumb-item active">Daftar Berita</li>
+        </ol>
+    </div>
+</div>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Title)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Content)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Intro)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Created)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Published)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Status)
-        </th>
-        <th></th>
-    </tr>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <p class="text-muted m-b-20">
+                    @Html.ActionLink("Tambah Baru", "Create", null, new { @class = "btn btn-info" })
+                </p>
+                <div class="table-responsive">
+                    <table id="table" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Judul</th>
+                                <th>Intro</th>
+                                <th>Status</th>
+                                <th class="text-nowrap">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action("Details","Posts", new { permalink = item.Permalink})" class="h6">@item.Title</a>
+                                    </td>
+                                    <td>
+                                        @Html.Raw(HttpUtility.HtmlDecode(item.Intro))
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </td>
+                                    <td class="text-nowrap">
+                                        <a href="@Url.Action("Edit", new { permalink = item.Permalink})" data-toggle="tooltip" data-original-title="Edit">
+                                            <i class="fa fa-pencil text-info m-r-10"></i>
+                                        </a>
+                                        <a href="@Url.Action("Delete", new { id = item.Permalink})" data-toggle="tooltip" data-original-title="Delete">
+                                            <i class="fa fa-trash-o text-danger m-r-10"></i>
+                                        </a>
+                                        <a href="@Url.Action("Details", new { permalink = item.Permalink})" data-toggle="tooltip" data-original-title="Details">
+                                            <i class="fa fa-clone m-r-10"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Title)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Content)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Intro)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Created)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Published)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Status)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Permalink }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Permalink }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Permalink })
-        </td>
-    </tr>
+@section scripts{
+    <script src="~/Content/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#table').DataTable();
+            $(document).ready(function () {
+                var table = $('#example').DataTable({
+                    "columnDefs": [{
+                        "visible": false,
+                        "targets": 2
+                    }],
+                    "order": [
+                        [2, 'asc']
+                    ],
+                    "displayLength": 25,
+                    "drawCallback": function (settings) {
+                        var api = this.api();
+                        var rows = api.rows({
+                            page: 'current'
+                        }).nodes();
+                        var last = null;
+                        api.column(2, {
+                            page: 'current'
+                        }).data().each(function (group, i) {
+                            if (last !== group) {
+                                $(rows).eq(i).before('<tr class="group"><td colspan="5">' + group + '</td></tr>');
+                                last = group;
+                            }
+                        });
+                    }
+                });
+                // Order by the grouping
+                $('#example tbody').on('click', 'tr.group', function () {
+                    var currentOrder = table.order()[0];
+                    if (currentOrder[0] === 2 && currentOrder[1] === 'asc') {
+                        table.order([2, 'desc']).draw();
+                    } else {
+                        table.order([2, 'asc']).draw();
+                    }
+                });
+            });
+        });
+        $('#example23').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        });
+    </script>
 }
-
-</table>

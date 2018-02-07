@@ -9,6 +9,7 @@ namespace Training.Models
     {
         public ICollection<PostCategory> Categories { get; set; }
         public string FeaturedImage { get; set; }
+        public int Viewer { get; set; }
         public bool IsFeatured { get; set; }
     }
     [Table("PostCategories")]

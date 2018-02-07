@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Training.Models;
 
 namespace Training.Controllers
 {
+    [Authorize(Roles = "Editor,Author")]
     public class PostsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -22,17 +24,22 @@ namespace Training.Controllers
         }
 
         // GET: Posts/Details/5
-        public ActionResult Details(string id)
+        public async Task<ActionResult> Details(string permalink)
         {
-            if (id == null)
+            if (permalink == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Post post = db.Posts.Find(id);
+            var post = await db.Posts.Include("Categories").Include("CreatedBy").Include("UpdatedBy").Include("PublishedBy")
+                .Where(x => x.Permalink == permalink)
+                .SingleOrDefaultAsync();
             if (post == null)
             {
                 return HttpNotFound();
             }
+            post.Viewer += 1;
+            db.Entry(post).State = EntityState.Modified;
+            var result = await db.SaveChangesAsync();
             return View(post);
         }
 
@@ -56,41 +63,127 @@ namespace Training.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ViewModels.Post _post)
+        public async Task<ActionResult> Create(ViewModels.Post _post)
         {
             if (ModelState.IsValid)
             {
-                var created = DateTimeOffset.UtcNow;
-                var post = new Post();
-                post.Title = _post.Title;
-                post.Content = _post.Content;
-                post.Intro = _post.Intro;
-                post.Permalink = post.Title.Replace(" ", "-")
-                    .Replace("&", "-");
-                post.Created = created;
-                post.Published = created;
-                post.Status = Status.Draft;
-                db.Posts.Add(post);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                //TO:DO
+                //dapatkan daftar category dari string of category 
+                var listCategories = new List<PostCategory>();
+                foreach (var item in _post.Categories)
+                {
+                    var categoryItem = await db.PostCategories.FindAsync(item);
+                    if(categoryItem != null)
+                        listCategories.Add(categoryItem);
+                }
+                var currentTime = DateTimeOffset.UtcNow;
+                var currentUser = await db.Users.Where(x => x.UserName == User.Identity.Name)
+                    .SingleOrDefaultAsync();
 
+                //buat object dari model post 
+                var post = new Post()
+                {
+                    Permalink = await GeneratePermalink(_post.Title),
+                    FeaturedImage = Helpers.FileHelper.UploadImage(_post.FeaturedImage),
+                    Title = _post.Title,
+                    Intro = _post.Intro,
+                    Content = _post.Content,
+                    Categories = listCategories,
+                    SEOTitle = _post.SEOTitle,
+                    SEODescription = _post.SEODescription,
+                    SEOKeywords = _post.SEOKeywords,
+                    Status = Status.Draft,
+                    Created = currentTime,
+                    Updated = currentTime,
+                    Published = currentTime,
+                    CreatedBy = currentUser,
+                    UpdatedBy = currentUser,
+                    PublishedBy = currentUser
+                };
+
+                //simpan ke database 
+                db.Posts.Add(post);
+                var result = await db.SaveChangesAsync();
+                if (result > 0)
+                    return RedirectToAction("Index");
+                
+                
+            }
+            var categories = await db.PostCategories
+                .Where(x => x.IsDeleted == false && x.Status == Status.Published)
+                .Select(i => new SelectListItem()
+                {
+                    Text = i.Title,
+                    Value = i.Permalink,
+                    Selected = false
+                }).ToArrayAsync();
+            ViewBag.Categories = categories;
             return View(_post);
         }
-
-        // GET: Posts/Edit/5
-        public ActionResult Edit(string id)
+        public async Task<string> GeneratePermalink(string title)
         {
-            if (id == null)
+            var temporaryPermalink = title.Replace(" ", "-").Replace(",", "-").Replace(".", "-").ToLower();
+            var posts = await db.Posts.Where(x => x.Title == title)
+                .ToListAsync();
+            if (posts != null)
+            {
+                var samePermalink = posts.Find(x => x.Permalink == temporaryPermalink);
+                if (samePermalink == null)
+                    return temporaryPermalink;
+                else
+                {
+                    var notFound = true;
+                    var counter = 1;
+                    while(notFound)
+                    {
+                        temporaryPermalink = title.Replace(" ", "-").ToLower() + "-" + counter;
+                        var checkPermalink = posts.Find(x => x.Permalink == temporaryPermalink);
+                        if(checkPermalink == null)
+                        {
+                            notFound = false;
+                        }
+                        counter++;
+                    }
+                    return temporaryPermalink;
+                }
+            }
+            else
+            {
+                return temporaryPermalink;
+            }
+        }
+        // GET: Posts/Edit/5
+        public async Task<ActionResult> Edit(string permalink)
+        {
+            if (permalink == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Post post = db.Posts.Find(id);
+
+            var post = await db.Posts.Include("Categories").Where(x => x.Permalink == permalink)
+                .SingleOrDefaultAsync();
+
             if (post == null)
             {
                 return HttpNotFound();
             }
-            return View(post);
+            var categories = await db.PostCategories
+                .Where(x => x.IsDeleted == false && x.Status == Status.Published)
+                .Select(i => new SelectListItem()
+                {
+                    Text = i.Title,
+                    Value = i.Permalink,
+                    Selected = false
+                }).ToArrayAsync();
+            foreach(var item in categories)
+            {
+                var isContains = post.Categories.Any(x => x.Permalink == item.Value);
+                if (isContains)
+                    item.Selected = true;
+            }
+            ViewBag.Categories = categories;
+            var postVm = new ViewModels.Post(post);
+            return View(postVm);
         }
 
         // POST: Posts/Edit/5
@@ -98,15 +191,62 @@ namespace Training.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Permalink,Title,Content,Intro,Created,Published,Status")] Post post)
+        public async Task<ActionResult> Edit(ViewModels.Post _post)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(post).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+
+                    var listCategories = new List<PostCategory>();
+                    foreach (var item in _post.Categories)
+                    {
+                        var categoryItem = await db.PostCategories.FindAsync(item);
+                        listCategories.Add(categoryItem);
+                    }
+                    var currentUser = await db.Users.Where(x => x.UserName == User.Identity.Name)
+                        .SingleOrDefaultAsync();
+                    var currentTime = DateTimeOffset.UtcNow;
+                    var post = await db.Posts.Include("Categories")
+                        .Where(x => x.Permalink == _post.Permalink).SingleOrDefaultAsync();
+                    post.Title = _post.Title;
+                    post.Content = _post.Content;
+                    post.Intro = _post.Intro;
+                    post.Categories = listCategories;
+                    post.SEOTitle = _post.SEOTitle;
+                    post.SEODescription = _post.SEODescription;
+                    post.SEOKeywords = _post.SEOKeywords;
+                    post.Updated = currentTime;
+                    post.UpdatedBy = currentUser;
+
+                    db.Entry(post).State = EntityState.Modified;
+                    var result = await db.SaveChangesAsync();
+                    if (result > 0)
+                        return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    Trace.TraceError(ex.Message);
+                    Trace.TraceError(ex.StackTrace);
+                }
             }
-            return View(post);
+            //If model states is invalid or exception happen redisplay the form
+            var categories = await db.PostCategories
+                .Where(x => x.IsDeleted == false && x.Status == Status.Published)
+                .Select(i => new SelectListItem()
+                {
+                    Text = i.Title,
+                    Value = i.Permalink,
+                    Selected = false
+                }).ToArrayAsync();
+            foreach (var item in categories)
+            {
+                var isContains = _post.Categories.Any(x => x == item.Value);
+                if (isContains)
+                    item.Selected = true;
+            }
+            ViewBag.Categories = categories;
+            return View(_post);
         }
 
         // GET: Posts/Delete/5

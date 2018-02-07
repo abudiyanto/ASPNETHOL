@@ -207,6 +207,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\FileHelper.cs" />
     <Compile Include="Migrations\201802050347284_InitialCreate.cs" />
     <Compile Include="Migrations\201802050347284_InitialCreate.Designer.cs">
       <DependentUpon>201802050347284_InitialCreate.cs</DependentUpon>
@@ -222,6 +223,10 @@
     <Compile Include="Migrations\201802060333248_PostV3.cs" />
     <Compile Include="Migrations\201802060333248_PostV3.Designer.cs">
       <DependentUpon>201802060333248_PostV3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802070740002_PostV31.cs" />
+    <Compile Include="Migrations\201802070740002_PostV31.Designer.cs">
+      <DependentUpon>201802070740002_PostV31.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -13595,6 +13600,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\images\uploads\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -13621,6 +13627,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802060333248_PostV3.resx">
       <DependentUpon>201802060333248_PostV3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802070740002_PostV31.resx">
+      <DependentUpon>201802070740002_PostV31.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

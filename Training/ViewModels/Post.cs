@@ -28,6 +28,22 @@ namespace Training.ViewModels
         public string SEOKeywords { get; set; }
         public HttpPostedFileBase FeaturedImage { get; set; }
         public ICollection<string> Categories { get; set; }
+
+        public Post()
+        {
+            //Default
+        }
+
+        public Post(Models.Post _post)
+        {
+            Permalink = _post.Permalink;
+            Title = _post.Title;
+            Intro = _post.Intro;
+            Content = _post.Content;
+            SEOTitle = _post.SEOTitle;
+            SEODescription = _post.SEODescription;
+            SEOKeywords = _post.SEOKeywords;
+        }
     }
     public class PostCategory
     {

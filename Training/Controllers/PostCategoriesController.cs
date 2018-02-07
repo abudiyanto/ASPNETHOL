@@ -23,18 +23,19 @@ namespace Training.Controllers
         }
 
         // GET: PostCategories/Details/5
-        public async Task<ActionResult> Details(string id)
+        public async Task<ActionResult> Details(string permalink)
         {
-            if (id == null)
+            if (permalink == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PostCategory postCategory = await db.PostCategories.FindAsync(id);
-            if (postCategory == null)
+            var category = await db.PostCategories.Include("Posts").Where(x => x.Permalink == permalink)
+                .SingleOrDefaultAsync();
+            if (category == null)
             {
                 return HttpNotFound();
             }
-            return View(postCategory);
+            return View(category);
         }
 
         // GET: PostCategories/Create
