@@ -13,6 +13,10 @@ namespace Training
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            routes.MapRoute("NewsDetail",
+                "news/{permalink}",
+                new { controller = "Posts", action = "Details", permalink = UrlParameter.Optional });
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

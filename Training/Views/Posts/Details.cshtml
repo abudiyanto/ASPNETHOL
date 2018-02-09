@@ -11,7 +11,7 @@
             <div class="col-lg-9 g-mb-50 g-mb-0--lg">
                 <article class="g-mb-60">
                     <header class="g-mb-30">
-                        <h2 class="h1 g-mb-15">@Model.Title</h2>
+                        <h2 class="h1 g-mb-15">@Model.Title @DateTime.Now.ToString("dd MMM, yyy hh:mm:ss")<a id="clickMe" href="#">Click Me</a></h2>
                         <ul class="list-inline d-sm-flex g-color-gray-dark-v4 mb-0">
                             <li class="list-inline-item">
                                 <a class="u-link-v5 g-color-gray-dark-v4 g-color-primary--hover" href="#!">@Model.CreatedBy.Email</a>
@@ -27,7 +27,7 @@
                                 </a>
                             </li>
                             <li class="list-inline-item ml-auto">
-                                <i class="icon-eye u-line-icon-pro align-middle mr-1"></i> Views @Model.Viewer
+                                <i class="icon-eye u-line-icon-pro align-middle mr-1"></i> Views <span id="viewer">@Model.Viewer</span>
                             </li>
                         </ul>
                         <hr class="g-brd-gray-light-v4 g-my-15">
@@ -441,105 +441,107 @@
                     </div>
                 </div>
                 <!-- End Subscribe -->
-                <!-- Recent Posts -->
-                <div class="g-mb-30">
-                    <div class="u-heading-v3-1 g-mb-30">
-                        <h2 class="h5 u-heading-v3__title g-color-gray-dark-v1 text-uppercase g-brd-primary">Recent Posts</h2>
+                <div id="recentPosts">
+                    <!-- Recent Posts -->
+                    <div class="g-mb-30">
+                        <div class="u-heading-v3-1 g-mb-30">
+                            <h2 class="h5 u-heading-v3__title g-color-gray-dark-v1 text-uppercase g-brd-primary">Recent Posts</h2>
+                        </div>
+                        <!-- Article -->
+                        <article class="media g-mb-30">
+                            <a class="d-flex u-shadow-v25 mr-3" href="#!">
+                                <img class="g-width-60 g-height-60" src="assets/img-temp/100x100/img4.jpg" alt="Image Description">
+                            </a>
+                            <div class="media-body">
+                                <h3 class="h6">
+                                    <a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">Best dessert recipes for breakfast which will..</a>
+                                </h3>
+                                <ul class="u-list-inline g-font-size-12 g-color-gray-dark-v4">
+                                    <li class="list-inline-item">
+                                        July 20, 2017
+                                    </li>
+                                    <li class="list-inline-item">/</li>
+                                    <li class="list-inline-item">
+                                        <a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#!">
+                                            <i class="icon-finance-206 u-line-icon-pro align-middle g-pos-rel g-top-1 mr-1"></i> 18
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+                        <!-- End Article -->
+                        <!-- Article -->
+                        <article class="media g-mb-30">
+                            <a class="d-flex u-shadow-v25 mr-3" href="#!">
+                                <img class="g-width-60 g-height-60" src="assets/img-temp/100x100/img5.jpg" alt="Image Description">
+                            </a>
+                            <div class="media-body">
+                                <h3 class="h6">
+                                    <a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">Stylish things to do, see and purchase..</a>
+                                </h3>
+                                <ul class="u-list-inline g-font-size-12 g-color-gray-dark-v4">
+                                    <li class="list-inline-item">
+                                        July 16, 2017
+                                    </li>
+                                    <li class="list-inline-item">/</li>
+                                    <li class="list-inline-item">
+                                        <a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#!">
+                                            <i class="icon-finance-206 u-line-icon-pro align-middle g-pos-rel g-top-1 mr-1"></i> 31
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+                        <!-- End Article -->
+                        <!-- Article -->
+                        <article class="media g-mb-30">
+                            <a class="d-flex u-shadow-v25 mr-3" href="#!">
+                                <img class="g-width-60 g-height-60" src="assets/img-temp/100x100/img6.jpg" alt="Image Description">
+                            </a>
+                            <div class="media-body">
+                                <h3 class="h6">
+                                    <a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">Government plans to test new primary school..</a>
+                                </h3>
+                                <ul class="u-list-inline g-font-size-12 g-color-gray-dark-v4">
+                                    <li class="list-inline-item">
+                                        July 07, 2017
+                                    </li>
+                                    <li class="list-inline-item">/</li>
+                                    <li class="list-inline-item">
+                                        <a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#!">
+                                            <i class="icon-finance-206 u-line-icon-pro align-middle g-pos-rel g-top-1 mr-1"></i> 24
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+                        <!-- End Article -->
+                        <!-- Article -->
+                        <article class="media">
+                            <a class="d-flex u-shadow-v25 mr-3" href="#!">
+                                <img class="g-width-60 g-height-60" src="assets/img-temp/100x100/img7.jpg" alt="Image Description">
+                            </a>
+                            <div class="media-body">
+                                <h3 class="h6">
+                                    <a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">Top 10 Luxury Hotels - 5 Star Best Luxury Hotels</a>
+                                </h3>
+                                <ul class="u-list-inline g-font-size-12 g-color-gray-dark-v4">
+                                    <li class="list-inline-item">
+                                        July 11, 2017
+                                    </li>
+                                    <li class="list-inline-item">/</li>
+                                    <li class="list-inline-item">
+                                        <a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#!">
+                                            <i class="icon-finance-206 u-line-icon-pro align-middle g-pos-rel g-top-1 mr-1"></i> 46
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+                        <!-- End Article -->
                     </div>
-                    <!-- Article -->
-                    <article class="media g-mb-30">
-                        <a class="d-flex u-shadow-v25 mr-3" href="#!">
-                            <img class="g-width-60 g-height-60" src="assets/img-temp/100x100/img4.jpg" alt="Image Description">
-                        </a>
-                        <div class="media-body">
-                            <h3 class="h6">
-                                <a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">Best dessert recipes for breakfast which will..</a>
-                            </h3>
-                            <ul class="u-list-inline g-font-size-12 g-color-gray-dark-v4">
-                                <li class="list-inline-item">
-                                    July 20, 2017
-                                </li>
-                                <li class="list-inline-item">/</li>
-                                <li class="list-inline-item">
-                                    <a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#!">
-                                        <i class="icon-finance-206 u-line-icon-pro align-middle g-pos-rel g-top-1 mr-1"></i> 18
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </article>
-                    <!-- End Article -->
-                    <!-- Article -->
-                    <article class="media g-mb-30">
-                        <a class="d-flex u-shadow-v25 mr-3" href="#!">
-                            <img class="g-width-60 g-height-60" src="assets/img-temp/100x100/img5.jpg" alt="Image Description">
-                        </a>
-                        <div class="media-body">
-                            <h3 class="h6">
-                                <a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">Stylish things to do, see and purchase..</a>
-                            </h3>
-                            <ul class="u-list-inline g-font-size-12 g-color-gray-dark-v4">
-                                <li class="list-inline-item">
-                                    July 16, 2017
-                                </li>
-                                <li class="list-inline-item">/</li>
-                                <li class="list-inline-item">
-                                    <a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#!">
-                                        <i class="icon-finance-206 u-line-icon-pro align-middle g-pos-rel g-top-1 mr-1"></i> 31
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </article>
-                    <!-- End Article -->
-                    <!-- Article -->
-                    <article class="media g-mb-30">
-                        <a class="d-flex u-shadow-v25 mr-3" href="#!">
-                            <img class="g-width-60 g-height-60" src="assets/img-temp/100x100/img6.jpg" alt="Image Description">
-                        </a>
-                        <div class="media-body">
-                            <h3 class="h6">
-                                <a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">Government plans to test new primary school..</a>
-                            </h3>
-                            <ul class="u-list-inline g-font-size-12 g-color-gray-dark-v4">
-                                <li class="list-inline-item">
-                                    July 07, 2017
-                                </li>
-                                <li class="list-inline-item">/</li>
-                                <li class="list-inline-item">
-                                    <a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#!">
-                                        <i class="icon-finance-206 u-line-icon-pro align-middle g-pos-rel g-top-1 mr-1"></i> 24
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </article>
-                    <!-- End Article -->
-                    <!-- Article -->
-                    <article class="media">
-                        <a class="d-flex u-shadow-v25 mr-3" href="#!">
-                            <img class="g-width-60 g-height-60" src="assets/img-temp/100x100/img7.jpg" alt="Image Description">
-                        </a>
-                        <div class="media-body">
-                            <h3 class="h6">
-                                <a class="u-link-v5 g-color-gray-dark-v1 g-color-primary--hover" href="#!">Top 10 Luxury Hotels - 5 Star Best Luxury Hotels</a>
-                            </h3>
-                            <ul class="u-list-inline g-font-size-12 g-color-gray-dark-v4">
-                                <li class="list-inline-item">
-                                    July 11, 2017
-                                </li>
-                                <li class="list-inline-item">/</li>
-                                <li class="list-inline-item">
-                                    <a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#!">
-                                        <i class="icon-finance-206 u-line-icon-pro align-middle g-pos-rel g-top-1 mr-1"></i> 46
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </article>
-                    <!-- End Article -->
+                    <!-- End Recent Posts -->
                 </div>
-                <!-- End Recent Posts -->
                 <!-- Popular Videos -->
                 <div class="g-mb-50">
                     <article class="g-pos-rel">
@@ -731,3 +733,60 @@
     </div>
 </section>
 <!-- End News Content -->
+
+@section scripts {
+<script>
+    $(document).ready(function () {
+        $('#clickMe').click(function (e) {
+            e.preventDefault();
+            alert("Hi");
+        });
+        console.log("Document Ready");
+        var data = {
+            'permalink': "@Model.Permalink"
+        };
+        $.ajax({
+            type: "POST",
+            data: data,
+            url: "@Url.Action("AddViewer", "Posts")",
+            beforeSend: function () {
+                console.log("before send update viewer");
+            },
+            success: function (response) {
+                //TO:DO
+                console.log(response);
+                if (response !== "KO") {
+                    $('#viewer').text(response);
+                }
+            },
+            error: function (request, status, error) {
+                //TO:DO
+                console.log(error);
+            },
+            complete: function () {
+                console.log("finish add viewer");
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("RecentPosts", "Posts")",
+                    beforeSend: function () {
+                        console.log("before send");
+                    },
+                    success: function (response) {
+                        //TO:DO
+                        console.log(response);
+                        $("#recentPosts").replaceWith(response);
+                    },
+                    error: function (request, status, error) {
+                        //TO:DO
+                        console.log(error);
+                    },
+                    complete: function () {
+                        console.log("finish");
+                    }
+                });
+            }
+        });
+    });
+</script>
+}
+    

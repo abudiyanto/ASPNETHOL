@@ -13597,6 +13597,7 @@
     <Content Include="Views\PostCategories\Details.cshtml" />
     <Content Include="Views\PostCategories\Edit.cshtml" />
     <Content Include="Views\PostCategories\Index.cshtml" />
+    <Content Include="Views\Shared\_RecentPostPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

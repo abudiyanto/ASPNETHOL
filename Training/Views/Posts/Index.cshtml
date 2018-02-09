@@ -55,6 +55,12 @@
                                         <a href="@Url.Action("Details", new { permalink = item.Permalink})" data-toggle="tooltip" data-original-title="Details">
                                             <i class="fa fa-clone m-r-10"></i>
                                         </a>
+                                        @if (User.IsInRole("Editor"))
+                                        {
+                                            <a class="publish" href="@item.Permalink" data-toggle="tooltip" data-original-title="Publish">
+                                                <i class="fa fa-rocket m-r-10"></i>
+                                            </a>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -65,12 +71,53 @@
         </div>
     </div>
 </div>
-
+@section styles {
+    <link href="~/assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
+}
 @section scripts{
-    <script src="~/Content/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/assets/plugins/sweetalert/sweetalert.min.js"></script>
 
     <script>
         $(document).ready(function () {
+            $('.publish').click(function (e) {
+                e.preventDefault();
+                var item = $(this).attr("href");
+                var data = {
+                    'permalink': item
+                };
+                swal({
+                    title: "Are you sure?",
+                    text: "Apakah anda yakin ingin mempublikasikan berita ini?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes!",
+                    closeOnConfirm: false
+                }, function () {
+                    $.ajax({
+                        type: "POST",
+                        data: data,
+                        url: "@Url.Action("Publish", "Posts")",
+                        beforeSend: function () {
+                            console.log("before send");
+                        },
+                        success: function (response) {
+                            //TO:DO
+                            console.log(response);
+                            if (response == "OK") {
+                                swal("Sukses", "Berita sudah di publikasikan", "success");
+                            }
+                        },
+                        error: function (request, status, error) {
+                            //TO:DO
+                            console.log(error);
+                            swal("Gagal", "Berita gagal di publikasikan", "error");
+                        }
+                    });
+
+                });
+            })
             $('#table').DataTable();
             $(document).ready(function () {
                 var table = $('#example').DataTable({

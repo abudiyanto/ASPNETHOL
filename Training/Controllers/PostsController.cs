@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI;
 using Training.Models;
 
 namespace Training.Controllers
@@ -24,6 +25,8 @@ namespace Training.Controllers
         }
 
         // GET: Posts/Details/5
+        [OutputCache(Duration = 900, VaryByParam = "*", Location = OutputCacheLocation.Any)]
+        [AllowAnonymous]
         public async Task<ActionResult> Details(string permalink)
         {
             if (permalink == null)
@@ -41,6 +44,43 @@ namespace Training.Controllers
             db.Entry(post).State = EntityState.Modified;
             var result = await db.SaveChangesAsync();
             return View(post);
+        }
+        [AllowAnonymous]
+        public async Task<ActionResult> RecentPosts()
+        {
+            var posts = await db.Posts.Where(x => x.IsDeleted == false)
+                .OrderByDescending(x => x.Published).Take(4).ToListAsync();
+            return PartialView("_RecentPostPartial", posts);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> AddViewer(string permalink)
+        {
+            var post = await db.Posts.FindAsync(permalink);
+            if (post != null)
+            {
+                post.Viewer += 1;
+                db.Entry(post).State = EntityState.Modified;
+                var result = await db.SaveChangesAsync();
+                if (result > 0)
+                    return Json(post.Viewer, JsonRequestBehavior.AllowGet);
+            }
+            return Json("KO", JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        [Authorize(Roles = "Editor")]
+        public async Task<ActionResult> Publish(string permalink)
+        {
+            var post = await db.Posts.FindAsync(permalink);
+            if (post != null)
+            {
+                post.Status = Status.Published;
+                db.Entry(post).State = EntityState.Modified;
+                var result = await db.SaveChangesAsync();
+                if (result > 0)
+                    return Json("OK", JsonRequestBehavior.AllowGet);
+            }
+            return Json("KO", JsonRequestBehavior.AllowGet);
         }
 
         // GET: Posts/Create
