@@ -1,0 +1,107 @@
+﻿@model IEnumerable<Training.Models.Village>
+
+@{
+    ViewBag.Title = "Daftar Kota/Kabupaten";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">Kelola Kelurahan</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Kelurahan</a></li>
+            <li class="breadcrumb-item active">Daftar Kelurahan</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <p class="text-muted m-b-20">
+                    @Html.ActionLink("Tambah Baru", "Create", null, new { @class = "btn btn-info" })
+                </p>
+                <div class="table-responsive">
+                    <table id="table" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Kelurahan</th>
+                                <th>Kecamatan</th>
+                                <th>Kota/Kabupaten</th>
+                                <th>Provinsi</th>
+                                <th class="text-nowrap">Aksi</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section styles {
+    <link href="~/assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
+}
+@section scripts{
+    <script src="~/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/assets/plugins/sweetalert/sweetalert.min.js"></script>
+    <script type="text/javascript" src="//cdn.datatables.net/plug-ins/1.10.16/api/fnFilterOnReturn.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            console.log("Ready...");
+            $('#table').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "info": true,
+                "responsive": true,
+                "ajax": {
+                    url: "@Url.Action("Data")",
+                    type: "post",
+                    error: function () {
+
+                    }
+                },
+                "columns": [
+                    { "data": "Name", "searchable": false, "orderable": false },
+                    { "data": "District", "searchable": false, "orderable": false },
+                    { "data": "Regency", "searchable": false, "orderable": false },
+                    { "data": "Province", "searchable": false, "orderable": false },
+                    {
+                        data: null,
+                        className: "center",
+                        orderable: false,
+                        defaultContent: '<a href="" class="action_edit"><i class="fa fa-pencil text-inverse m-r-10"></i></a><a href="" class="action_delete"><i class="fa fa-close text-danger m-r-10"></i></a><a href="" class="action_details"><i class="fa fa-clone"></i></a>'
+                    }
+                ]
+            });
+            console.log("Finish");
+            var table = $('#table').DataTable();
+            $('#table').dataTable().fnFilterOnReturn();
+            $('#table').on('click', 'a.action_edit', function (e) {
+                e.preventDefault();
+                var data = table.row($(this).closest('tr')).data();
+                console.log(data);
+                var editUrl = "@Url.Action("Edit", new { id = "Id" })";
+                console.log(editUrl);
+                var url = editUrl.replace("Id", data.Id);
+                console.log(url);
+                //window.location.href = url;
+            });
+            $('#table').on('click', 'a.action_delete', function (e) {
+                e.preventDefault();
+                var data = table.row($(this).closest('tr')).data();
+                var deleteUrl = "@Url.Action("Delete", new { id = "Id" })";
+                var url = deleteUrl.replace("Id", data.Id);
+                window.location.href = url;
+            });
+            $('#table').on('click', 'a.action_details', function (e) {
+                e.preventDefault();
+                var data = table.row($(this).closest('tr')).data();
+                var detailsUrl = "@Url.Action("Details", new { id = "Id" })";
+                var url = detailsUrl.replace("Id", data.Id);
+                window.location.href = url;
+            });
+        });
+    </script>
+}

@@ -33,5 +33,13 @@ namespace Training.Models
         public System.Data.Entity.DbSet<Training.Models.Post> Posts { get; set; }
 
         public System.Data.Entity.DbSet<Training.Models.PostCategory> PostCategories { get; set; }
+
+        public System.Data.Entity.DbSet<Training.Models.Province> Provinces { get; set; }
+
+        public System.Data.Entity.DbSet<Training.Models.Regency> Regencies { get; set; }
+
+        public System.Data.Entity.DbSet<Training.Models.District> Districts { get; set; }
+
+        public System.Data.Entity.DbSet<Training.Models.Village> Villages { get; set; }
     }
 }
